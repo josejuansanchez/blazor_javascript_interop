@@ -28,8 +28,8 @@ Todos los ejemplos se van a realizar en un mismo proyecto **Blazor Server** que 
 Dentro de la carpeta `wwwroot`, vamos a crear un directorio llamado `js` y dentro de este directorio vamos a crear un archivo llamado `mi_javascripts.js` con el siguiente contenido:
 
 ```javascript
-// Función de ejemplo que muestra un mensaje y no devuelve nada
-function mostrarMensaje(nombre) {
+// Función asignada al objeto window como propiedad global
+window.mostrarMensaje = (nombre) => {
     console.log(`Hola desde JavaScript, ${nombre}`);
     alert(`Hola ${nombre}, este mensaje viene de JavaScript`);
 }
@@ -137,7 +137,7 @@ Dentro de la carpeta `wwwroot`, vamos a crear un directorio llamado `js` y dentr
 
 ```javascript
 // Función que devuelve un string a C#
-function obtenerFechaActual() {
+window.obtenerFechaActual = () => {
     const hoy = new Date();
     return hoy.toLocaleString();
 }
@@ -180,6 +180,116 @@ Crea un nuevo componente Razor llamado `EjemploJS2.razor` en la carpeta `Pages` 
     }
 }
 ```
+
+**Paso 4. Modifique el archivo de navegación**
+
+Añada un enlace al nuevo componente `EjemploJS1` en el archivo `Components/Layout/NavMenu.razor`.
+
+---
+
+### Ejemplo 3. Llamar a un método estático C# desde JavaScript
+
+**Paso 1. Crear el componente Blazor para ser llamado desde JavaScript**
+
+Crea un nuevo componente Razor llamado `EjemploJS3.razor` en el directorio `Pages` con el siguiente contenido:
+
+```razor
+@page "/ejemplojs3"
+@rendermode InteractiveServer
+@inject IJSRuntime JS
+
+<h3>Ejemplo 3. Llamar a un método de C# desde JavaScript</h3>
+<p>Seguimiento del ratón con JS y C#</p>
+<p>Posición: X=@x, Y=@y</p>
+
+@code {
+    private int x, y;
+
+    [JSInvokable]
+    public void ActualizarPosicion(int posX, int posY)
+    {
+        x = posX;
+        y = posY;
+        StateHasChanged();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await JS.InvokeVoidAsync("iniciarSeguimientoRaton", DotNetObjectReference.Create(this));
+    }
+}
+```
+
+### El atributo `[JSInvokable]`
+
+El atributo `[JSInvokable]` se utiliza para marcar un método en C# que puede ser invocado desde JavaScript.
+
+En nuestro caso, añadimos el atributo al método `ActualizarPosicion`:
+
+```csharp
+[JSInvokable]
+public void ActualizarPosicion(int posX, int posY)
+{
+    x = posX;
+    y = posY;
+    StateHasChanged();
+}
+```
+
+Este método recibe dos parámetros enteros que representan las coordenadas X e Y del ratón, actualiza las variables `x` e `y`, y llama a `StateHasChanged()` para que Blazor **actualice la interfaz de usuario con la nueva posición**.
+
+### El método `OnAfterRenderAsync`
+
+El método `OnAfterRenderAsync` se utiliza para realizar acciones después de que el componente ha sido renderizado en el navegador. El parámetro `firstRender` asegura que el código solo se ejecute una vez, cuando el componente se carga por primera vez.
+
+```chsarp
+protected override async Task OnAfterRenderAsync(bool firstRender)
+{
+    if (firstRender)
+        await JS.InvokeVoidAsync("iniciarSeguimientoRaton", DotNetObjectReference.Create(this));
+}
+```
+
+En este método se llama a la función JavaScript `iniciarSeguimientoRaton`, pasando una referencia al objeto .NET actual (`this`) con `DotNetObjectReference.Create(this)`. Esta referencia (`DotNetObjectReference`) permite que el código JavaScript pueda llamar métodos de esta instancia concreta del componente.
+
+**Paso 2. Añadir la función JavaScript que hace llamada a un método de C#**
+
+Dentro de la carpeta `wwwroot`, vamos a crear un directorio llamado `js` y dentro de este directorio vamos a crear un archivo llamado `mi_javascripts.js` con el siguiente contenido:
+
+> **Nota:** Si el archivo ya existe, simplemente añade la siguiente función al final del archivo.
+
+
+```javascript
+// Función JavaScript que llama a un método de C#
+window.iniciarSeguimientoRaton = (dotnetRef) => {
+    document.addEventListener('mousemove', (e) => {
+        dotnetRef.invokeMethodAsync('ActualizarPosicion', e.clientX, e.clientY);
+    });
+}
+```
+
+Vamos a analizar qué realiza esta función:
+
+- El parámetro `dotNetObj` es la referencia a la instancia C# que recibió `DotNetObjectReference.Create(this)`.
+- Cada vez que el usuario mueve el ratón, el evento `mousemove` se dispara.
+- El script llama al método de C# `ActualizarPosicion` pasando las coordenadas X y Y.
+
+**Paso 3. Incluir el archivo JavaScript en el proyecto**
+
+Edita el archivo `App.razor` para incluir el archivo JavaScript que acabamos de crear antes de la etiqueta de cierre `</body>`:
+
+```html
+<script src="js/mi_javascripts.js"></script>
+```
+
+> **Nota:** Si la etiqueta ya existe no es necesario añadirla de nuevo.
+
+**Paso 4. Modifique el archivo de navegación**
+
+Añada un enlace al nuevo componente `EjemploJS3` en el archivo `Components/Layout/NavMenu.razor`.
+
+---
 
 
 # Referencias
