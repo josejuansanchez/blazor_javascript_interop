@@ -3,7 +3,7 @@
 ## Índice
 
 - [Introducción](#introducción)
-- Ejemplos
+- **Ejemplos**
     - [Ejemplo 1. Llamar a una función JavaScript que no devuelve nada desde Blazor](#ejemplo-1-llamar-a-una-función-javascript-que-no-devuelve-nada-desde-blazor)
     - [Ejemplo 2. Llamar a una función JavaScript que devuelve un valor desde Blazor](#ejemplo-2-llamar-a-una-función-javascript-que-devuelve-un-valor-desde-blazor)
     - [Ejemplo 3. Llamar a un método estático C# desde JavaScript](#ejemplo-3-llamar-a-un-método-estático-c-desde-javascript)
@@ -12,7 +12,7 @@
     - [Ejemplo 6. Uso de APIs del navegador](#ejemplo-6-uso-de-apis-del-navegador)
     - [Ejemplo 7. Modificar elementos del DOM desde JavaScript](#ejemplo-7-modificar-elementos-del-dom-desde-javascript)
     - [Ejemplo 8. Almacenamiento local del navegador con localStorage](#ejemplo-8-almacenamiento-local-del-navegador-con-localstorage)
-- Ejercicios
+- **Ejercicios**
     - [Ejercicio 1. Llamada a una función JavaScript que devuelve un valor desde Blazor](#ejercicio-1-llamada-a-una-función-javascript-que-devuelve-un-valor-desde-blazor)
     - [Ejercicio 2. Visualización de gráficos con Chart.js y selección de tipo de gráfico](#ejercicio-2-visualización-de-gráficos-con-chartjs-y-selección-de-tipo-de-gráfico)
     - [Ejercicio 3. Corrija el ejercicio 5](#ejercicio-3-corrija-el-ejercicio-5)
