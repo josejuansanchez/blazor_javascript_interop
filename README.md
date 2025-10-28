@@ -1,5 +1,16 @@
 # Interoperabilidad de JavaScript en Blazor
 
+## Índice
+
+- [Introducción](#introducción)
+- [Ejemplo 1. Llamar a una función JavaScript que no devuelve nada desde Blazor](#ejemplo-1-llamar-a-una-función-javascript-que-no-devuelve-nada-desde-blazor)
+- [Ejemplo 2. Llamar a una función JavaScript que devuelve un valor desde Blazor](#ejemplo-2-llamar-a-una-función-javascript-que-devuelve-un-valor-desde-blazor)
+- [Ejemplo 3. Llamar a un método estático C# desde JavaScript](#ejemplo-3-llamar-a-un-método-estático-c-desde-javascript)
+- [Ejemplo 4. Utilizar JavaScript de terceros en Blazor](#ejemplo-4-utilizar-javascript-de-terceros-en-blazor)
+- [Referencias](#referencias)
+
+## Introducción
+
 Aunque Blazor permite desarrollar aplicaciones web completas utilizando únicamente **C#** y **.NET**, en muchos casos es necesario interactuar con **código JavaScript** para aprovechar todo el potencial del entorno web moderno.
 
 Esta capacidad de comunicación entre ambos lenguajes se conoce como **interoperabilidad JavaScript (JS Interop)**.
