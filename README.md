@@ -105,6 +105,12 @@ Si no se inyecta `IJSRuntime`, el componente no tendría acceso al entorno de ej
 
 El método `InvokeVoidAsync` se utiliza para llamar a una función JavaScript que **no devuelve ningún valor** (es decir, una función que retorna `void` en C#).
 
+**Ejemplo:**
+
+```csharp
+await JS.InvokeVoidAsync("mostrarMensaje", nombre);
+```
+
 ### `InvokeAsync<T>`
 
 Cuando queramos llamar a una función JS que **devuelve un valor**, utilizamos el método `InvokeAsync<T>`, donde `T` es el tipo de dato que esperamos recibir.
