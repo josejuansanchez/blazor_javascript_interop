@@ -69,6 +69,8 @@ Esto significa que:
 - El navegador se comunica en tiempo real con el servidor a través de **SignalR**,
 - Los eventos como `@onclick`, las actualizaciones de datos y las llamadas JavaScript se procesan de forma **reactiva e inmediata**.
 
+![](images/blazor-server.png)
+
 Si no incluimos esta directiva, el componente se renderiza como HTML estático (sin conexión activa), por lo que:
 
 - No podríamos manejar eventos como `@onclick`,
