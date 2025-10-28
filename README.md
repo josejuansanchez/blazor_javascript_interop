@@ -196,7 +196,7 @@ Crea un nuevo componente Razor llamado `EjemploJS2.razor` en la carpeta `Pages` 
 
 **Paso 4. Modifique el archivo de navegación**
 
-Añada un enlace al nuevo componente `EjemploJS1` en el archivo `Components/Layout/NavMenu.razor`.
+Añada un enlace al nuevo componente `EjemploJS2` en el archivo `Components/Layout/NavMenu.razor`.
 
 ---
 
@@ -420,6 +420,8 @@ Crea un nuevo componente Razor llamado `EjemploJS4.razor` en el directorio `Page
 }
 ```
 
+
+
 **Paso 4. Modifique el archivo de navegación**
 
 Añada un enlace al nuevo componente `EjemploJS4` en el archivo `Components/Layout/NavMenu.razor`.
@@ -468,6 +470,261 @@ window.duplicaTexto = (entrada, salida) => {
     if (!elemento) return;
     elemento.innerHTML = ' ' + valor;
 }
+```
+
+---
+
+## Ejemplo 6. Uso de APIs del navegador
+
+En este ejemplo vamos a ver cómo utilizar una **API nativa del navegador** desde un componente Blazor mediante **interoperabilidad con JavaScript**.
+
+Vamos a utilizar la API de **geolocalización** (`Geolocation API`) para obtener la posición actual del usuario (latitud y longitud) y mostrarla en pantalla.
+
+**Paso 1. Añadir la función JavaScript que accede a la API del navegador**
+
+Edita el archivo `wwwroot/js/mi_javascripts.js` y añade la siguiente función:
+
+```javascript
+// Función que utiliza la API de geolocalización del navegador
+// y envía los datos de latitud y longitud a un método C# del componente
+window.obtenerUbicacion = async (dotnetRef) => {
+    if (!navigator.geolocation) {
+        alert("La geolocalización no está disponible en este navegador.");
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        pos => {
+            // Llama al método C# pasando las coordenadas obtenidas
+            dotnetRef.invokeMethodAsync("MostrarUbicacion", pos.coords.latitude, pos.coords.longitude);
+        },
+        err => {
+            alert("No se pudo obtener la ubicación: " + err.message);
+        }
+    );
+};
+```
+
+Comentarios sobre el código:
+
+* `navigator.geolocation.getCurrentPosition()` es una API propia del navegador que solicita permiso al usuario para acceder a su ubicación.
+* Si el permiso se concede, ejecuta la función de éxito, que obtiene la latitud y longitud.
+* Luego, la función JavaScript llama al método C# `MostrarUbicacion` mediante `dotnetRef.invokeMethodAsync(...)`.
+* Si hay un error (por ejemplo, el usuario deniega el permiso), muestra un mensaje de alerta.
+
+
+**Paso 2. Crear el componente Blazor**
+
+Crea un nuevo componente llamado `EjemploJS6.razor` en la carpeta `Pages` con el siguiente contenido:
+
+```razor
+@page "/ejemplojs6"
+@rendermode InteractiveServer
+@inject IJSRuntime JS
+
+<h3>Ejemplo 6. Uso de APIs del navegador</h3>
+<p>Obtener la ubicación actual del usuario mediante la API de geolocalización</p>
+
+<button class="btn btn-primary" @onclick="ObtenerUbicacion">
+    Obtener ubicación
+</button>
+
+<p class="mt-3">
+    Coordenadas: @coordenadas
+</p>
+
+@code {
+    private string coordenadas = "Sin datos";
+
+    // Método invocado desde JavaScript con las coordenadas obtenidas
+    [JSInvokable]
+    public void MostrarUbicacion(double lat, double lon)
+    {
+        coordenadas = $"Latitud: {lat:F6}, Longitud: {lon:F6}";
+        StateHasChanged(); // Actualiza la interfaz
+    }
+
+    // Método que inicia la solicitud de ubicación llamando a la función JS
+    private async Task ObtenerUbicacion()
+    {
+        await JS.InvokeVoidAsync("obtenerUbicacion", DotNetObjectReference.Create(this));
+    }
+}
+```
+
+Explicación del código:
+
+1. **`[JSInvokable]`**
+   Permite que el método C# `MostrarUbicacion` pueda ser llamado desde JavaScript.
+   Este método recibe los valores de latitud y longitud, los guarda en una variable y actualiza la interfaz.
+
+2. **`DotNetObjectReference.Create(this)`**
+   Crea una referencia al componente actual que puede ser pasada a JavaScript.
+   De esta forma, el código JS puede llamar a métodos de **esta instancia concreta** del componente.
+
+3. **`InvokeVoidAsync("obtenerUbicacion", ...)`**
+   Llama a la función JavaScript que accede a la API del navegador.
+
+
+**Paso 3. Incluir el archivo JavaScript en el proyecto**
+
+Asegúrate de que el archivo `mi_javascripts.js` está incluido en `App.razor`, justo antes de la etiqueta `</body>`:
+
+```html
+<script src="js/mi_javascripts.js"></script>
+```
+
+> **Nota:** Si ya lo habías agregado en ejemplos anteriores, no es necesario repetirlo.
+
+**Paso 4. Modificar el archivo de navegación**
+
+Añade un enlace al nuevo componente en `Components/Layout/NavMenu.razor`:
+
+```razor
+<NavLink class="nav-link" href="ejemplojs6">
+    <span class="oi oi-map-marker" aria-hidden="true"></span> EjemploJS6
+</NavLink>
+```
+
+**Nota sobre seguridad y permisos**
+
+* Los navegadores modernos **solo permiten la geolocalización en contextos seguros (HTTPS)** o en `localhost` durante el desarrollo.
+* Si se ejecuta desde un servidor HTTP, la API fallará automáticamente por motivos de privacidad.
+
+---
+
+## Ejemplo 7. Modificar elementos del DOM desde JavaScript
+
+En este ejemplo aprenderemos a **manipular directamente elementos HTML (DOM)** desde **JavaScript**, invocando las funciones correspondientes desde un componente **Blazor** mediante **interoperabilidad (JS Interop)**.
+
+Este tipo de interacción es muy común cuando necesitamos realizar efectos visuales, animaciones, cambios de estilo o manipulación directa de etiquetas HTML que no están controladas por el sistema de renderizado de Blazor.
+
+**Paso 1. Añadir las funciones JavaScript que modifican el DOM**
+
+Edita el archivo `wwwroot/js/mi_javascripts.js` y añade el siguiente código:
+
+```javascript
+// Cambia el color del texto de un elemento con el id indicado
+window.cambiarColor = (elementId, color) => {
+    const elemento = document.getElementById(elementId);
+    if (elemento)
+        elemento.style.color = color;
+};
+
+// Cambia el tamaño de la fuente de un elemento
+window.cambiarTamaño = (elementId, size) => {
+    const elemento = document.getElementById(elementId);
+    if (elemento)
+        elemento.style.fontSize = size + "px";
+};
+
+// Cambia el contenido de texto de un elemento
+window.actualizarTexto = (elementId, texto) => {
+    const elemento = document.getElementById(elementId);
+    if (elemento)
+        elemento.innerText = texto;
+};
+```
+
+Comentarios sobre el código:
+
+* Cada función utiliza `document.getElementById()` para acceder al elemento HTML correspondiente.
+* Se comprueba que el elemento exista antes de modificarlo.
+* Las funciones cambian propiedades del **DOM** directamente: color, tamaño de fuente y contenido del texto.
+
+**Paso 2. Crear el componente Blazor**
+
+Crea un nuevo componente Razor llamado `EjemploJS7.razor` en la carpeta `Pages` con el siguiente contenido:
+
+```razor
+@page "/ejemplojs7"
+@rendermode InteractiveServer
+@inject IJSRuntime JS
+
+<h3>Ejemplo 7. Modificar elementos del DOM desde JavaScript</h3>
+<p>Interacción entre Blazor y el DOM mediante funciones JavaScript</p>
+
+<div class="mb-3">
+    <p id="parrafo" class="border p-2">Texto de ejemplo</p>
+
+    <div class="input-group mb-2">
+        <input @bind="nuevoTexto" placeholder="Nuevo texto" class="form-control" />
+        <button class="btn btn-secondary" @onclick="ActualizarTexto">Actualizar texto</button>
+    </div>
+
+    <div class="input-group mb-2">
+        <input @bind="color" placeholder="Color (por ejemplo: red, blue, green)" class="form-control" />
+        <button class="btn btn-secondary" @onclick="CambiarColor">Cambiar color</button>
+    </div>
+
+    <div class="input-group mb-2">
+        <input @bind="tamano" type="number" placeholder="Tamaño en px" class="form-control" />
+        <button class="btn btn-secondary" @onclick="CambiarTamano">Cambiar tamaño</button>
+    </div>
+</div>
+
+@code {
+    private string nuevoTexto = "";
+    private string color = "";
+    private int tamano = 16;
+
+    private async Task ActualizarTexto()
+    {
+        await JS.InvokeVoidAsync("actualizarTexto", "parrafo", nuevoTexto);
+    }
+
+    private async Task CambiarColor()
+    {
+        await JS.InvokeVoidAsync("cambiarColor", "parrafo", color);
+    }
+
+    private async Task CambiarTamano()
+    {
+        await JS.InvokeVoidAsync("cambiarTamaño", "parrafo", tamano);
+    }
+}
+```
+
+Observe el uso de `@bind` para enlazar los valores de los campos de entrada a las variables C#.
+
+**Paso 3. Incluir el archivo JavaScript en el proyecto**
+
+Asegúrate de que el archivo `mi_javascripts.js` esté referenciado en el archivo `App.razor`, antes del cierre de `</body>`:
+
+```html
+<script src="js/mi_javascripts.js"></script>
+```
+
+> **Nota:** Si ya fue agregado en ejemplos anteriores, no es necesario añadirlo de nuevo.
+
+**Paso 4. Modificar el archivo de navegación**
+
+Añade el nuevo enlace al componente `EjemploJS7` en `Components/Layout/NavMenu.razor`:
+
+```razor
+<div class="nav-item px-3">
+    <NavLink class="nav-link" href="ejemplojs7">
+        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> EjemploJS7
+    </NavLink>
+</div>        
+```
+
+---
+
+## Ejemplo 8. Almacenamiento local del navegador con localStorage
+
+**Código JavaScript**
+
+```javascript
+window.guardarDato = (clave, valor) => localStorage.setItem(clave, valor);
+window.leerDato = (clave) => localStorage.getItem(clave);
+```
+
+**Código Razor del componente EjemploJS8.razor:**
+
+```razor
+await JS.InvokeVoidAsync("guardarDato", "nombre", nombre);
+nombreGuardado = await JS.InvokeAsync<string>("leerDato", "nombre");
 ```
 
 ---
