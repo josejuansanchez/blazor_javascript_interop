@@ -1,5 +1,22 @@
 # Interoperabilidad de JavaScript en Blazor
 
+Aunque Blazor permite desarrollar aplicaciones web completas utilizando únicamente **C#** y **.NET**, en muchos casos es necesario interactuar con **código JavaScript** para aprovechar todo el potencial del entorno web moderno.
+
+Esta capacidad de comunicación entre ambos lenguajes se conoce como **interoperabilidad JavaScript (JS Interop)**.
+
+Blazor abstrae muchas funcionalidades del navegador mediante su propio modelo de componentes y eventos, pero **no sustituye completamente el ecosistema JavaScript**.
+
+Existen librerías y APIs del navegador que solo están disponibles mediante JavaScript, como:
+
+- **APIs del DOM** (manipulación directa de elementos HTML).
+- **Librerías de visualización** (Chart.js, Leaflet, D3.js, etc.).
+- **Integraciones de terceros** (Google Maps, Stripe, PayPal, etc.).
+- **Funciones del navegador** como notificaciones, geolocalización o almacenamiento local.
+
+![](images/blazor_javascript.jpg)
+
+*Imagen 1. Imagen obtenida de [NetMentor](https://www.netmentor.es/entrada/javascript-interop)*
+
 En esta práctica vamos a ver cómo podemos integrar JavaScript en una aplicación Blazor Server utilizando la interoperabilidad de JavaScript que nos ofrece Blazor.
 
 Todos los ejemplos se van a realizar en un mismo proyecto **Blazor Server** que vamos a llamar `BlazorAppJS`.
@@ -70,6 +87,8 @@ Esto significa que:
 - Los eventos como `@onclick`, las actualizaciones de datos y las llamadas JavaScript se procesan de forma **reactiva e inmediata**.
 
 ![](images/blazor-server.png)
+
+*Imagen 2. Imagen obtenida de [Microsoft](https://learn.microsoft.com/es-es/aspnet/core/blazor/hosting-models?view=aspnetcore-9.0)*
 
 Si no incluimos esta directiva, el componente se renderiza como HTML estático (sin conexión activa), por lo que:
 
