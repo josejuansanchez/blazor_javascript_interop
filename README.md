@@ -422,6 +422,74 @@ Añada un enlace al nuevo componente `EjemploJS4` en el archivo `Components/Layo
 
 ---
 
+## Ejemplo 5. Interacción JavaScript pura dentro de un componente Blazor
+
+A continuación, se muestra un ejemplo de cómo podemos incluir código JavaScript directamente dentro de un componente Blazor, aunque no es la forma recomendada de integrar JavaScript en Blazor.
+
+Algunos de los motivos por los que se recomienda hacerlo así es porque:
+
+- Blazor no detecta que ese elemento tiene lógica asociada en JavaScript. No puede actualizarlo, eliminarlo ni limpiar recursos correctamente.
+- Si el código crece, mezclar JavaScript dentro del HTML complica depuración y mantenimiento.
+
+**Código Razor del componente EjemploJS5.razor:**
+
+```razor
+@page "/ejemplojs5"
+@rendermode InteractiveServer
+
+<h3>Ejemplo 5</h3>
+<p>Duplica texto</p>
+
+<div class="mb-3">
+    <input id="texto1" onkeyup="duplicaTexto('texto1','texto2')" class="form-control" />
+    <label id="texto2" class="mt-3" />
+</div>
+
+@code {
+
+}
+```
+
+Observe que en el campo de entrada hemos añadido el evento `onkeyup` que llama a la función JavaScript `duplicaTexto`, pasando los identificadores de los dos elementos HTML.
+
+**Código JavaScript que se llama en el evento `onkeyup` del componente**
+
+```javascript
+// Función que duplica el texto de un campo de entrada en otro elemento
+window.duplicaTexto = (entrada, salida) => {
+    // Operador ?. : Evita error si el elemento no existe (no intenta acceder a .value de null)
+    // Operador ?? : Si el valor es null o undefined, reemplaza por una cadena vacía ('')
+    const valor = document.getElementById(entrada)?.value ?? '';
+    const elemento = document.getElementById(salida);
+    if (!elemento) return;
+    elemento.innerHTML = ' ' + valor;
+}
+```
+
+---
+
+## Ejercicio 1. Llamada a una función JavaScript que devuelve un valor desde Blazor
+
+En este ejercicio, deberá crear un componente Blazor que permita al usuario introducir dos números en dos campos de texto, y al hacer clic en un botón llame a una función JavaScript que sume esos dos números y devuelva el resultado para mostrarlo en pantalla.
+
+---
+
+### Ejercicio 2. Visualización de gráficos con Chart.js y selección de tipo de gráfico
+
+Modifica el componente del Ejemplo 4 para que el usuario pueda seleccionar el tipo de gráfico que desea visualizar antes de renderizarlo. Deberá mostrar una lista de opciones de tipos de gráficos (line, bar, radar, doughnut, pie, polarArea, bubble, scatter) y actualizar la función JavaScript `createChart` para que acepte un parámetro adicional que indique el tipo de gráfico a crear.
+
+---
+
+### Ejercicio 3. Corrija el ejercicio 5
+
+Corrija el componente del Ejemplo 5 para que utilice la interoperabilidad de JavaScript de Blazor en lugar de incluir el código JavaScript directamente en el HTML del componente.
+
+---
+
+### Ejercicio 4. Contador animado
+
+---
+
 # Referencias
 
 - [Interoperabilidad de JavaScript en Blazor de ASP.NET Core (interoperabilidad de JS)](https://learn.microsoft.com/es-es/aspnet/core/blazor/javascript-interoperability/?view=aspnetcore-9.0). Microsoft Ignite.
