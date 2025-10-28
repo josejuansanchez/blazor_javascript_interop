@@ -713,19 +713,162 @@ Añade el nuevo enlace al componente `EjemploJS7` en `Components/Layout/NavMenu.
 
 ## Ejemplo 8. Almacenamiento local del navegador con localStorage
 
-**Código JavaScript**
+En este ejemplo aprenderemos a **guardar y recuperar información en el navegador** utilizando la API `localStorage` mediante funciones JavaScript invocadas desde Blazor.
+
+El almacenamiento local del navegador (`localStorage`) permite **guardar datos de forma persistente** en el dispositivo del usuario, incluso después de cerrar la pestaña o el navegador.
+A diferencia de las cookies, los datos almacenados aquí **no se envían al servidor**.
+
+**Paso 1. Añadir las funciones JavaScript para gestionar el almacenamiento local**
+
+Edita el archivo `wwwroot/js/mi_javascripts.js` y añade las siguientes funciones:
 
 ```javascript
-window.guardarDato = (clave, valor) => localStorage.setItem(clave, valor);
-window.leerDato = (clave) => localStorage.getItem(clave);
+// Guarda un valor en el almacenamiento local
+window.guardarDato = (clave, valor) => {
+    localStorage.setItem(clave, valor);
+};
+
+// Lee un valor del almacenamiento local
+window.leerDato = (clave) => {
+    return localStorage.getItem(clave);
+};
+
+// Elimina un valor del almacenamiento local
+window.eliminarDato = (clave) => {
+    localStorage.removeItem(clave);
+};
 ```
 
-**Código Razor del componente EjemploJS8.razor:**
+Comentarios sobre el código:
+
+* `localStorage.setItem(clave, valor)` guarda un dato.
+* `localStorage.getItem(clave)` recupera un valor previamente guardado.
+* `localStorage.removeItem(clave)` elimina una entrada concreta del almacenamiento local.
+* Los datos se guardan como **pares clave–valor** en formato texto (`string`).
+
+
+**Paso 2. Crear el componente Blazor**
+
+Crea un nuevo componente Razor llamado `EjemploJS8.razor` en la carpeta `Pages` con el siguiente contenido:
 
 ```razor
-await JS.InvokeVoidAsync("guardarDato", "nombre", nombre);
-nombreGuardado = await JS.InvokeAsync<string>("leerDato", "nombre");
+@page "/ejemplojs8"
+@rendermode InteractiveServer
+@inject IJSRuntime JS
+
+<h3>Ejemplo 8. Almacenamiento local del navegador con localStorage</h3>
+<p>Guardar y recuperar datos usando JavaScript desde Blazor</p>
+
+<div class="mb-3">
+    <input @bind="clave" placeholder="Clave" class="form-control mb-2" />
+    <input @bind="valor" placeholder="Valor a guardar" class="form-control mb-2" />
+
+    <button class="btn btn-primary me-2" @onclick="GuardarDato">Guardar dato</button>
+    <button class="btn btn-success me-2" @onclick="LeerDato">Leer dato</button>
+    <button class="btn btn-danger" @onclick="EliminarDato">Eliminar dato</button>
+
+    <p class="mt-3"><strong>Resultado:</strong> @resultado</p>
+</div>
+
+@code {
+    private string clave = "";
+    private string valor = "";
+    private string resultado = "";
+
+    private async Task GuardarDato()
+    {
+        if (!string.IsNullOrWhiteSpace(clave))
+        {
+            await JS.InvokeVoidAsync("guardarDato", clave, valor);
+            resultado = $"Dato guardado correctamente con la clave '{clave}'";
+        }
+        else
+        {
+            resultado = "Debe introducir una clave.";
+        }
+    }
+
+    private async Task LeerDato()
+    {
+        if (!string.IsNullOrWhiteSpace(clave))
+        {
+            var valorLeido = await JS.InvokeAsync<string>("leerDato", clave);
+            resultado = valorLeido != null
+                ? $"Valor almacenado: {valorLeido}"
+                : "No se encontró ningún dato con esa clave.";
+        }
+        else
+        {
+            resultado = "Debe introducir una clave.";
+        }
+    }
+
+    private async Task EliminarDato()
+    {
+        if (!string.IsNullOrWhiteSpace(clave))
+        {
+            await JS.InvokeVoidAsync("eliminarDato", clave);
+            resultado = $"Dato eliminado para la clave '{clave}'.";
+        }
+        else
+        {
+            resultado = "Debe introducir una clave.";
+        }
+    }
+}
 ```
+
+Comentarios sobre el código:
+
+1. **Entradas de datos**
+   El usuario introduce una **clave** y un **valor**, que luego se almacenan en el `localStorage`.
+
+2. **Funciones en C#**
+
+   * `GuardarDato()` → llama a la función JS `guardarDato`.
+   * `LeerDato()` → usa `InvokeAsync<string>` para obtener el valor guardado.
+   * `EliminarDato()` → elimina la entrada correspondiente.
+
+3. **`InvokeVoidAsync` vs `InvokeAsync<T>`**
+
+   * Se usa `InvokeVoidAsync` cuando la función JavaScript **no devuelve nada**.
+   * Se usa `InvokeAsync<string>` cuando **sí devuelve un valor** (como en `leerDato`).
+
+**Paso 3. Incluir el archivo JavaScript en el proyecto**
+
+Asegúrate de que el archivo `mi_javascripts.js` está referenciado en el archivo `App.razor`, antes del cierre de `</body>`:
+
+```html
+<script src="js/mi_javascripts.js"></script>
+```
+
+> **Nota:** No repitas la inclusión si ya fue agregada en ejemplos anteriores.
+
+**Paso 4. Añadir el enlace al menú de navegación**
+
+Edita el archivo `Components/Layout/NavMenu.razor` y añade un enlace al nuevo componente:
+
+```razor
+<div class="nav-item px-3">
+    <NavLink class="nav-link" href="ejemplojs8">
+        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> EjemploJS8
+    </NavLink>
+</div>        
+```
+
+**Ventajas del uso de `localStorage`**
+
+* Los datos **persisten entre sesiones** del navegador.
+* No requieren conexión con el servidor.
+* Son muy útiles para guardar:
+
+  * Preferencias del usuario (tema, idioma, color, etc.)
+  * Últimos valores introducidos en formularios.
+  * Datos temporales de trabajo offline.
+
+**Nota de seguridad**
+
+Aunque `localStorage` es práctico, **no debe usarse para almacenar información sensible** (como contraseñas o tokens de autenticación), ya que cualquier script del sitio web puede acceder a él.
 
 ---
 
