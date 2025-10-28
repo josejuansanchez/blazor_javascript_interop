@@ -870,6 +870,10 @@ Edita el archivo `Components/Layout/NavMenu.razor` y añade un enlace al nuevo c
 
 Aunque `localStorage` es práctico, **no debe usarse para almacenar información sensible** (como contraseñas o tokens de autenticación), ya que cualquier script del sitio web puede acceder a él.
 
+**Herramientas de depuración**
+
+Puede hacer uso de las herramientas de desarrollo del navegador (DevTools) para inspeccionar y manipular el contenido de `localStorage`.
+
 ---
 
 ## Ejercicio 1. Llamada a una función JavaScript que devuelve un valor desde Blazor
@@ -890,7 +894,11 @@ Corrija el componente del Ejemplo 5 para que utilice la interoperabilidad de Jav
 
 ---
 
-### Ejercicio 4. Contador animado
+### Ejercicio 4. Geolocalización con Leaflet.js
+
+A partir del Ejemplo 6 (Geolocalización), amplía el código para mostrar la ubicación del usuario en un mapa interactivo usando la librería [Leaflet.js](https://leafletjs.com).
+
+El marcador debe colocarse en las coordenadas devueltas por navigator.geolocation.
 
 ---
 
