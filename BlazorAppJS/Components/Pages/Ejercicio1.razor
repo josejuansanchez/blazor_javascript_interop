@@ -1,0 +1,32 @@
+﻿@page "/ejercicio1"
+@rendermode InteractiveServer
+@inject IJSRuntime JS
+
+<h3>Ejercicio 1</h3>
+
+<p>Llamada a una función de JavaScript con valor de retorno</p>
+
+<div class="mb-3">    
+    <input id="numero1"  />
+    <input id="numero2" />
+</div>
+
+<button class="btn btn-primary" @onclick="EjecutarSuma">
+    Calcular Suma
+</button>
+
+<p class="mt-3">Resultado: @resultado</p>
+
+
+@code {
+    private int resultado = 0;
+     
+    private async Task EjecutarSuma()
+    {
+        // El tipo genérico <int> define el tipo de retorno esperado de JS.
+        resultado = await JS.InvokeAsync<int>("suma", "numero1", "numero2");
+    }
+
+
+
+}

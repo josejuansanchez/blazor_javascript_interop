@@ -1,0 +1,21 @@
+﻿@page "/ejemplojs2"
+@rendermode InteractiveServer
+@inject IJSRuntime JS
+
+<h3>Ejemplo 2. Ejecutar una función JavaScript desde Blazor</h3>
+
+<button class="btn btn-primary mt-2" @onclick="ObtenerFecha">
+    Obtener fecha actual desde JavaScript
+</button>
+
+<p class="mt-3">Fecha actual: @fecha</p>
+
+@code {
+    private string fecha = "";
+
+    private async Task ObtenerFecha()
+    {
+        // Llama a una función JS que devuelve un valor
+        fecha = await JS.InvokeAsync<string>("obtenerFechaActual");
+    }
+}

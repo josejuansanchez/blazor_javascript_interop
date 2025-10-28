@@ -1,0 +1,33 @@
+﻿@page "/ejemplojs6"
+@rendermode InteractiveServer
+@inject IJSRuntime JS
+
+<h3>Ejemplo 6. Uso de APIs del navegador</h3>
+<p>Obtener la ubicación actual del usuario mediante la API de geolocalización</p>
+
+<button class="btn btn-primary" @onclick="ObtenerUbicacion">
+    Obtener ubicación
+</button>
+
+<p class="mt-3">
+    Coordenadas: @coordenadas
+</p>
+
+@code {
+    private string coordenadas = "Sin datos";
+
+    // Método invocado desde JavaScript con las coordenadas obtenidas
+    [JSInvokable]
+    public void MostrarUbicacion(double lat, double lon)
+    {
+        // Formatear las coordenadas como un número Fixed-point (decimal) con 6 cifras decimales
+        coordenadas = $"Latitud: {lat:F6}, Longitud: {lon:F6}";
+        StateHasChanged(); // Actualiza la interfaz
+    }
+
+    // Método que inicia la solicitud de ubicación llamando a la función JS
+    private async Task ObtenerUbicacion()
+    {
+        await JS.InvokeVoidAsync("obtenerUbicacion", DotNetObjectReference.Create(this));
+    }
+}

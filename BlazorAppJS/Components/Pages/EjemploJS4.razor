@@ -1,0 +1,59 @@
+﻿@page "/ejemplojs4"
+@rendermode InteractiveServer
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+<h3>Ejemplo 4. Utilizar JavaScript de terceros (Chart.js) en Blazor</h3>
+
+<div style="width: 800px; height: 400px">
+    <canvas id="@HtmlElementId"></canvas>
+</div>
+
+@code {
+    // Identificador único para el elemento HTML del gráfico
+    public string HtmlElementId { get; set; } = $"chart_{Guid.NewGuid()}";
+    
+    // Definimos un tipo de dato inmutable para los datos del gráfico
+    public record LineChartData(int Year, int Salary);
+
+    // Lista con datos de ejemplo para el gráfico
+    public LineChartData[] Data { get; set; } = [
+        new LineChartData(2019, 65_400),
+        new LineChartData(2020, 69_600),
+        new LineChartData(2021, 72_250),
+        new LineChartData(2022, 76_800),
+        new LineChartData(2023, 92_400),
+        new LineChartData(2024, 96_180),
+        new LineChartData(2025, 103_500)
+    ];
+
+    // Indicador para saber si la interoperabilidad con JavaScript está disponible
+    private bool JavaScriptInteropAvailable = false;
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            // Llamamos a la función JavaScript disposeChart para eliminar el gráfico anterior antes de crear uno nuevo
+            await JS.InvokeVoidAsync("disposeChart", new object[] { HtmlElementId });
+        }
+        else
+        {
+            // En el primer renderizado, indicamos que la interoperabilidad con JavaScript está disponible
+            JavaScriptInteropAvailable = true;
+        }
+
+        // Llamamos a la función JavaScript createChart para crear el gráfico con los datos proporcionados
+        await JS.InvokeVoidAsync("createChart", new object[] { HtmlElementId, Data, "Salario por año" });
+    }
+
+    // Esta función se ejecuta cuando el componente deja de existir en la interfaz.
+    // Llamamaos a la función JavaScript disposeChart para limpiar los recursos asociados al gráfico.
+    public async ValueTask DisposeAsync()
+    {
+        if (JavaScriptInteropAvailable)
+        {
+            await JS.InvokeVoidAsync("disposeChart", new object[] { HtmlElementId });
+        }
+    }
+}

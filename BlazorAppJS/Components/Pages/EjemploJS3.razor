@@ -1,0 +1,25 @@
+﻿@page "/ejemplojs3"
+@rendermode InteractiveServer
+@inject IJSRuntime JS
+
+<h3>Ejemplo 3. Llamar a un método de C# desde JavaScript</h3>
+<p>Seguimiento del ratón con JS y C#</p>
+<p>Posición: X=@x, Y=@y</p>
+
+@code {
+    private int x, y;
+
+    [JSInvokable]
+    public void ActualizarPosicion(int posX, int posY)
+    {
+        x = posX;
+        y = posY;
+        StateHasChanged();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await JS.InvokeVoidAsync("iniciarSeguimientoRaton", DotNetObjectReference.Create(this));
+    }
+}

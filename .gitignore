@@ -1,0 +1,91 @@
+# Compilación
+bin/
+obj/
+out/
+build/
+
+# Archivos de usuario
+*.user
+*.userosscache
+*.suo
+*.userprefs
+*.csproj.user
+*.rsuser
+
+# Configuración local
+.vs/
+.idea/
+.vscode/
+
+# Logs
+*.log
+*.tlog
+
+# Archivos generados por publicación o empaquetado
+publish/
+dist/
+wwwroot/dist/
+wwwroot/build/
+*.publish.xml
+
+# Caché de dependencias
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Archivos temporales del sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Archivos de entorno
+.env
+.env.*
+!.env.example
+
+# Certificados locales de desarrollo (Blazor Server)
+*.pfx
+*.pem
+*.key
+
+# Archivos de respaldo / temporales de editores
+*~
+*.bak
+*.tmp
+*.swp
+*.swo
+
+# Archivos generados por Razor
+*.g.cs
+*.g.cshtml.cs
+*.g.i.cs
+
+# Archivos de cobertura o análisis
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+*.nunit.xml
+*.trx
+
+# Archivos de publicación
+*.Publish.xml
+*.pubxml
+*.publishproj
+
+# Archivos de paquetes NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+# Excepto si usas repositorio de paquetes locales:
+!packages/build/
+!packages/repositories.config
+
+# Archivos de Blazor WebAssembly específicos
+wwwroot/service-worker-assets.js
+wwwroot/service-worker.js
+wwwroot/_framework/
+wwwroot/_content/

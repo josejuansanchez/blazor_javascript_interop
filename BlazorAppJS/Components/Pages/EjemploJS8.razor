@@ -1,0 +1,64 @@
+﻿@page "/ejemplojs8"
+@rendermode InteractiveServer
+@inject IJSRuntime JS
+
+<h3>Ejemplo 8. Almacenamiento local del navegador con localStorage</h3>
+<p>Guardar y recuperar datos usando JavaScript desde Blazor</p>
+
+<div class="mb-3">
+    <input @bind="clave" placeholder="Clave" class="form-control mb-2" />
+    <input @bind="valor" placeholder="Valor a guardar" class="form-control mb-2" />
+
+    <button class="btn btn-primary me-2" @onclick="GuardarDato">Guardar dato</button>
+    <button class="btn btn-success me-2" @onclick="LeerDato">Leer dato</button>
+    <button class="btn btn-danger" @onclick="EliminarDato">Eliminar dato</button>
+
+    <p class="mt-3"><strong>Resultado:</strong> @resultado</p>
+</div>
+
+@code {
+    private string clave = "";
+    private string valor = "";
+    private string resultado = "";
+
+    private async Task GuardarDato()
+    {
+        if (!string.IsNullOrWhiteSpace(clave))
+        {
+            await JS.InvokeVoidAsync("guardarDato", clave, valor);
+            resultado = $"Dato guardado correctamente con la clave '{clave}'";
+        }
+        else
+        {
+            resultado = "Debe introducir una clave.";
+        }
+    }
+
+    private async Task LeerDato()
+    {
+        if (!string.IsNullOrWhiteSpace(clave))
+        {
+            var valorLeido = await JS.InvokeAsync<string>("leerDato", clave);
+            resultado = valorLeido != null
+                ? $"Valor almacenado: {valorLeido}"
+                : "No se encontró ningún dato con esa clave.";
+        }
+        else
+        {
+            resultado = "Debe introducir una clave.";
+        }
+    }
+
+    private async Task EliminarDato()
+    {
+        if (!string.IsNullOrWhiteSpace(clave))
+        {
+            await JS.InvokeVoidAsync("eliminarDato", clave);
+            resultado = $"Dato eliminado para la clave '{clave}'.";
+        }
+        else
+        {
+            resultado = "Debe introducir una clave.";
+        }
+    }
+}

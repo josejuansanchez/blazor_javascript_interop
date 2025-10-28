@@ -1,0 +1,22 @@
+﻿@page "/ejemplojs1"
+@rendermode InteractiveServer
+@inject IJSRuntime JS
+
+<h3>Ejemplo 1. Ejecutar una función JavaScript desde Blazor</h3>
+
+<input @bind="nombre" placeholder="Escribe tu nombre" class="form-control" />
+
+<button class="btn btn-primary mt-2" @onclick="MostrarMensaje">
+    Llamar a JavaScript
+</button>
+
+
+@code {
+    private string nombre = "";
+
+    private async Task MostrarMensaje()
+    {
+        // Llama a una función JS que no devuelve nada (void)
+        await JS.InvokeVoidAsync("mostrarMensaje", nombre);
+    }
+}

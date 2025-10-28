@@ -1,0 +1,57 @@
+﻿@page "/ejemplojs7"
+@rendermode InteractiveServer
+@inject IJSRuntime JS
+
+<h3>Ejemplo 7. Modificar elementos del DOM desde JavaScript</h3>
+<p>Interacción entre Blazor y el DOM mediante funciones JavaScript</p>
+
+<div class="mb-3">
+    <p id="parrafo" class="border p-2">Texto de ejemplo</p>
+
+    <!-- Texto -->
+    <div class="input-group mb-2">
+        <input @bind="nuevoTexto" placeholder="Nuevo texto" class="form-control" />
+        <button class="btn btn-secondary" @onclick="ActualizarTexto">Actualizar texto</button>
+    </div>
+
+    <!-- Color -->
+    <div class="input-group mb-2">
+        <select @bind="color" class="form-select">
+            <option value="">-- Selecciona un color --</option>
+            <option value="red">Rojo</option>
+            <option value="blue">Azul</option>
+            <option value="green">Verde</option>
+            <option value="orange">Naranja</option>
+            <option value="purple">Morado</option>
+            <option value="black">Negro</option>
+        </select>
+        <button class="btn btn-secondary" @onclick="CambiarColor">Cambiar color</button>
+    </div>
+
+    <!-- Tamaño -->
+    <div class="input-group mb-2">
+        <input @bind="tamano" type="number" placeholder="Tamaño en px" class="form-control" />
+        <button class="btn btn-secondary" @onclick="CambiarTamano">Cambiar tamaño</button>
+    </div>
+</div>
+
+@code {
+    private string nuevoTexto = "";
+    private string color = "";
+    private int tamano = 16;
+
+    private async Task ActualizarTexto()
+    {
+        await JS.InvokeVoidAsync("actualizarTexto", "parrafo", nuevoTexto);
+    }
+
+    private async Task CambiarColor()
+    {
+        await JS.InvokeVoidAsync("cambiarColor", "parrafo", color);
+    }
+
+    private async Task CambiarTamano()
+    {
+        await JS.InvokeVoidAsync("cambiarTamaño", "parrafo", tamano);
+    }
+}
