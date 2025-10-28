@@ -7,10 +7,10 @@
 - [Ejemplo 2. Llamar a una función JavaScript que devuelve un valor desde Blazor](#ejemplo-2-llamar-a-una-función-javascript-que-devuelve-un-valor-desde-blazor)
 - [Ejemplo 3. Llamar a un método estático C# desde JavaScript](#ejemplo-3-llamar-a-un-método-estático-c-desde-javascript)
 - [Ejemplo 4. Utilizar JavaScript de terceros en Blazor](#ejemplo-4-utilizar-javascript-de-terceros-en-blazor)
-- [Ejercico 1. Llamada a una función JavaScript que devuelve un valor desde Blazor](#ejercicio-1-llamada-a-una-función-javascript-que-devuelve-un-valor-desde-blazor)
-- [Ejercico 2. Visualización de gráficos con Chart.js y selección de tipo de gráfico](#ejercicio-2-visualización-de-gráficos-con-chartjs-y-selección-de-tipo-de-gráfico)
-- [Ejercico 3. Corrija el ejercicio 5](#ejercicio-3-corrija-el-ejercicio-5)
-- [Ejercico 4. Contador animado](#ejercicio-4-contador-animado)
+- [Ejercicio 1. Llamada a una función JavaScript que devuelve un valor desde Blazor](#ejercicio-1-llamada-a-una-función-javascript-que-devuelve-un-valor-desde-blazor)
+- [Ejercicio 2. Visualización de gráficos con Chart.js y selección de tipo de gráfico](#ejercicio-2-visualización-de-gráficos-con-chartjs-y-selección-de-tipo-de-gráfico)
+- [Ejercicio 3. Corrija el ejercicio 5](#ejercicio-3-corrija-el-ejercicio-5)
+- [Ejercicio 4. Contador animado](#ejercicio-4-contador-animado)
 - [Referencias](#referencias)
 
 ## Introducción
