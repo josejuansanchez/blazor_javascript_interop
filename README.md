@@ -131,9 +131,7 @@ Añada un enlace al nuevo componente `EjemploJS1` en el archivo `Components/Layo
 
 **Paso 1. Añadir la función JavaScript que devuelve un valor**
 
-Dentro de la carpeta `wwwroot`, vamos a crear un directorio llamado `js` y dentro de este directorio vamos a crear un archivo llamado `mi_javascripts.js` con el siguiente contenido:
-
-> **Nota:** Si el archivo ya existe, simplemente añade la siguiente función al final del archivo.
+Vamos a editar el archivo que contiene el código JavaScript de nuestro proyecto `wwwroot/js/mi_javascripts.js`, para añadir las funciones necesarias para crear y eliminar el gráfico:
 
 ```javascript
 // Función que devuelve un string a C#
@@ -145,7 +143,7 @@ window.obtenerFechaActual = () => {
 
 **Paso 2. Incluir el archivo JavaScript en el proyecto**
 
-Edita el archivo `App.razor` para incluir el archivo JavaScript que acabamos de crear antes de la etiqueta de cierre `</body>`:
+En el paso anterior, modificamos el archivo `App.razor` para incluir el archivo JavaScript que contiene nuestro código, antes de la etiqueta de cierre `</body>`:
 
 ```html
 <script src="js/mi_javascripts.js"></script>
@@ -255,10 +253,7 @@ En este método se llama a la función JavaScript `iniciarSeguimientoRaton`, pas
 
 **Paso 2. Añadir la función JavaScript que hace llamada a un método de C#**
 
-Dentro de la carpeta `wwwroot`, vamos a crear un directorio llamado `js` y dentro de este directorio vamos a crear un archivo llamado `mi_javascripts.js` con el siguiente contenido:
-
-> **Nota:** Si el archivo ya existe, simplemente añade la siguiente función al final del archivo.
-
+Vamos a editar el archivo que contiene el código JavaScript de nuestro proyecto `wwwroot/js/mi_javascripts.js`, para añadir la función necesaria para llamar al método de C#:
 
 ```javascript
 // Función JavaScript que llama a un método de C#
@@ -291,6 +286,130 @@ Añada un enlace al nuevo componente `EjemploJS3` en el archivo `Components/Layo
 
 ---
 
+## Ejemplo 4. Utilizar JavaScript de terceros en Blazor
+
+En este ejemplo vamos a utilizar la librería de JavaScript [Chart.js](https://www.chartjs.org) para mostrar un gráfico de barras en un componente Blazor.
+
+**Paso 1. Añadir la librería Chart.js al proyecto**
+
+Edita el archivo `App.razor` para incluir la librería [Chart.js](https://www.chartjs.org) antes de la etiqueta de cierre `</body>`:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+```
+
+**Paso 2. Añadir las funciones JavaScript para crear y eliminar el gráfico**
+
+Vamos a editar el archivo que contiene el código JavaScript de nuestro proyecto `wwwroot/js/mi_javascripts.js`, para añadir las funciones necesarias para crear y eliminar el gráfico:
+
+
+```javascript
+// Referencia: https://www.telerik.com/blogs/blazor-basics-blazor-javascript-interop-calling-javascript-net
+
+function createChart(htmlElementId, data, label) {
+    new Chart(
+        document.getElementById(htmlElementId),
+        {
+            type: 'bar',
+            data: {
+                labels: data.map(row => row.year),
+                datasets: [
+                    {
+                        label: label,
+                        data: data.map(row => row.salary)
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            },
+        }
+    );
+}
+
+function disposeChart(htmlElementId) {
+    const chartStatus = Chart.getChart(htmlElementId);
+    if (chartStatus != undefined) {
+        chartStatus.destroy();
+    }
+}
+```
+
+**Paso 3. Crear el componente Blazor para mostrar el gráfico**
+
+Crea un nuevo componente Razor llamado `EjemploJS4.razor` en el directorio `Pages` con el siguiente contenido:
+
+```razor
+@page "/ejemplojs4"
+@rendermode InteractiveServer
+@inject IJSRuntime JS
+@implements IAsyncDisposable    // Indica que el componente puede liberar recursos de forma asíncrona
+
+<h1>Using Charts.js from Blazor!</h1>
+
+<div style="width: 800px; height: 400px">
+    <canvas id="@HtmlElementId"></canvas>
+</div>
+
+@code {
+    // Identificador único para el elemento HTML del gráfico
+    public string HtmlElementId { get; set; } = $"chart_{Guid.NewGuid()}";
+    
+    // Definimos un tipo de dato inmutable para los datos del gráfico
+    public record LineChartData(int Year, int Salary);
+
+    // Lista con datos de ejemplo para el gráfico
+    public LineChartData[] Data { get; set; } = [
+        new LineChartData(2019, 65_400),
+        new LineChartData(2020, 69_600),
+        new LineChartData(2021, 72_250),
+        new LineChartData(2022, 76_800),
+        new LineChartData(2023, 92_400),
+        new LineChartData(2024, 96_180),
+        new LineChartData(2025, 103_500)
+    ];
+
+    // Indicador para saber si la interoperabilidad con JavaScript está disponible
+    private bool JavaScriptInteropAvailable = false;
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            // Llamamos a la función JavaScript disposeChart para eliminar el gráfico anterior antes de crear uno nuevo
+            await JS.InvokeVoidAsync("disposeChart", new object[] { HtmlElementId });
+        }
+        else
+        {
+            // En el primer renderizado, indicamos que la interoperabilidad con JavaScript está disponible
+            JavaScriptInteropAvailable = true;
+        }
+
+        // Llamamos a la función JavaScript createChart para crear el gráfico con los datos proporcionados
+        await JS.InvokeVoidAsync("createChart", new object[] { HtmlElementId, Data, "Salario por año" });
+    }
+
+    // Esta función se ejecuta cuando el componente deja de existir en la interfaz.
+    // Llamamaos a la función JavaScript disposeChart para limpiar los recursos asociados al gráfico.
+    public async ValueTask DisposeAsync()
+    {
+        if (JavaScriptInteropAvailable)
+        {
+            await JS.InvokeVoidAsync("disposeChart", new object[] { HtmlElementId });
+        }
+    }
+}
+```
+
+**Paso 4. Modifique el archivo de navegación**
+
+Añada un enlace al nuevo componente `EjemploJS4` en el archivo `Components/Layout/NavMenu.razor`.
+
+---
 
 # Referencias
 
